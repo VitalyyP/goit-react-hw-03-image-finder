@@ -1,11 +1,12 @@
 import { Component } from 'react';
 import { pixabayApi } from '../../services/pixabayApi';
 import ImageGalleryItem from '../ImageGalleryItem';
+import Button from '../Button';
 
 const newPixabayApi = new pixabayApi();
 console.log(newPixabayApi);
 
-export class ImageGalery extends Component {
+class ImageGalery extends Component {
   state = {
     // searchQuery: this.props.searchValue,
     searchResults: [],
@@ -28,6 +29,16 @@ export class ImageGalery extends Component {
           console.log(err);
           this.setState({ status: 'rejected' });
         });
+
+      // const { length } = prevState.searchResults;
+      // const { arrayImg } = this.state;
+
+      if (prevState.searchResults.length !== this.state.searchResults.length) {
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
     }
   }
 
@@ -44,11 +55,19 @@ export class ImageGalery extends Component {
         console.log(err);
         this.setState({ status: 'rejected' });
       });
+    // window.scrollTo({
+    //   top: document.documentElement.scrollHeight,
+    //   behavior: 'smooth',
+    // });
   };
 
+  setModalImage() {
+    const { openModal } = this.props;
+  }
   render() {
     const { status } = this.state;
-    const { handleClick } = this;
+    const { handleClick, setModalImage } = this;
+
     if (status === 'idle') {
       return <h1>Hello</h1>;
     }
@@ -58,14 +77,12 @@ export class ImageGalery extends Component {
     if (status === 'resolved') {
       return (
         <>
-          <ul className="ImageGallery">
+          <ul className="ImageGallery" onClick={setModalImage}>
             {this.state.searchResults.map(el => (
               <ImageGalleryItem key={el.id} item={el} />
             ))}
           </ul>
-          <button type="button" className="Button" onClick={handleClick}>
-            Load more
-          </button>
+          <Button handleClick={handleClick} />
         </>
       );
     }
@@ -74,3 +91,5 @@ export class ImageGalery extends Component {
     }
   }
 }
+
+export default ImageGalery;
