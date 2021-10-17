@@ -7,15 +7,19 @@ export class pixabayApi {
     this.page = 1;
   }
 
-  get query() {
-    return this.searchQuery;
+  get searchQuery() {
+    return this._searchQuery;
   }
 
-  set query(newQuery) {
-    this.searchQuery = newQuery;
+  set searchQuery(newQuery) {
+    return (this._searchQuery = newQuery);
   }
 
-  fetchImage(searchQuery) {
+  resetPage() {
+    this.page = 1;
+  }
+
+  fetchImages(searchQuery) {
     const url = `${BASE_URL}?image_type=photo&orientation=horizontal&q=${this.searchQuery}&page=${this.page}&per_page=12&key=${KEY}`;
 
     return fetch(url)

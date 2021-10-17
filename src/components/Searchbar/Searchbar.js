@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { pixabayApi } from '../../services/pixabayApi';
 
 class Searchbar extends Component {
   state = {
@@ -24,6 +25,7 @@ class Searchbar extends Component {
   };
 
   render() {
+    const { value } = this.state;
     const { handleInputChange, handleSubmite } = this;
     return (
       <header className="Searchbar">
@@ -38,6 +40,7 @@ class Searchbar extends Component {
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
+            value={value}
             onChange={handleInputChange}
           />
         </form>

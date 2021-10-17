@@ -1,21 +1,39 @@
 import { Component } from 'react';
 import { pixabayApi } from '../../services/pixabayApi';
+import ImageGalleryItem from '../ImageGalleryItem';
 
 const newPixabayApi = new pixabayApi();
 console.log(newPixabayApi);
 
 export class ImageGalery extends Component {
   state = {
+    // searchQuery: this.props.searchValue,
     searchResults: [],
     status: 'idle',
   };
 
-  componentDidUpdate(prevProps, prevState) {}
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.searchValue !== this.props.searchValue) {
+      console.log('get fetch');
+      this.setState({ status: 'pending' });
+      newPixabayApi.resetPage();
+      newPixabayApi.searchQuery = this.props.searchValue;
+      newPixabayApi
+        .fetchImages()
+        .then(searchResults => {
+          console.log(searchResults.hits);
+          this.setState({ searchResults: searchResults.hits, status: 'resolved' });
+        })
+        .catch(err => {
+          console.log(err);
+          this.setState({ status: 'rejected' });
+        });
+    }
+  }
 
   handleClick = () => {
-    this.setState({ status: 'pending' });
     newPixabayApi
-      .fetchImage()
+      .fetchImages()
       .then(searchResults => {
         this.setState(prev => ({
           searchResults: [...prev.searchResults, ...searchResults.hits],
@@ -27,6 +45,7 @@ export class ImageGalery extends Component {
         this.setState({ status: 'rejected' });
       });
   };
+
   render() {
     const { status } = this.state;
     const { handleClick } = this;
@@ -39,14 +58,12 @@ export class ImageGalery extends Component {
     if (status === 'resolved') {
       return (
         <>
-          <ul>
+          <ul className="ImageGallery">
             {this.state.searchResults.map(el => (
-              <li key={el.id}>
-                <img src={el.webformatURL} alt=" " />
-              </li>
+              <ImageGalleryItem key={el.id} item={el} />
             ))}
           </ul>
-          <button type="button" onClick={handleClick}>
+          <button type="button" className="Button" onClick={handleClick}>
             Load more
           </button>
         </>
