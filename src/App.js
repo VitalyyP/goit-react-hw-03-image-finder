@@ -2,35 +2,15 @@ import { Component } from 'react';
 import './App.css';
 import ImageGalery from './components/ImageGallery';
 import Searchbar from './components/Searchbar/';
-import { pixabayApi } from './services/pixabayApi';
 import Modal from './components/Modal/';
 
-const newPixabayApi = new pixabayApi();
 class App extends Component {
   state = {
-    searchValue: '',
-    modalImg: '',
+    searchValue: ' ',
     showModal: false,
   };
 
   getSearchValues = searchValue => this.setState({ searchValue });
-
-  searchImages = data =>
-    newPixabayApi
-      .fetchImage(data)
-      .then(searchResults => {
-        this.setState(prev => ({
-          searchResults: [...prev.searchResults, ...searchResults.hits],
-          // searchValue: {this.value},
-          status: 'resolved',
-          searchValue: data,
-        }));
-        console.log(searchResults);
-      })
-      .catch(err => {
-        console.log(err);
-        this.setState({ status: 'rejected' });
-      });
 
   toggleModal = () => {
     this.setState(({ showModal }) => ({ showModal: !showModal }));

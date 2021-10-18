@@ -1,44 +1,38 @@
+import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { pixabayApi } from '../../services/pixabayApi';
 import ImageGalleryItem from '../ImageGalleryItem';
 import Button from '../Button';
+import Loader from '../Loader';
 
 const newPixabayApi = new pixabayApi();
-console.log(newPixabayApi);
 
 class ImageGalery extends Component {
   state = {
-    // searchQuery: this.props.searchValue,
     searchResults: [],
     status: 'idle',
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.searchValue !== this.props.searchValue) {
-      console.log('get fetch');
       this.setState({ status: 'pending' });
       newPixabayApi.resetPage();
       newPixabayApi.searchQuery = this.props.searchValue;
       newPixabayApi
         .fetchImages()
         .then(searchResults => {
-          console.log(searchResults.hits);
           this.setState({ searchResults: searchResults.hits, status: 'resolved' });
         })
         .catch(err => {
           console.log(err);
           this.setState({ status: 'rejected' });
         });
-
-      // const { length } = prevState.searchResults;
-      // const { arrayImg } = this.state;
-
-      if (prevState.searchResults.length !== this.state.searchResults.length) {
-        window.scrollTo({
-          top: document.documentElement.scrollHeight,
-          behavior: 'smooth',
-        });
-      }
+    }
+    if (prevState.searchResults.length !== this.state.searchResults.length) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
+      });
     }
   }
 
@@ -55,41 +49,44 @@ class ImageGalery extends Component {
         console.log(err);
         this.setState({ status: 'rejected' });
       });
-    // window.scrollTo({
-    //   top: document.documentElement.scrollHeight,
-    //   behavior: 'smooth',
-    // });
   };
 
-  setModalImage() {
-    const { openModal } = this.props;
-  }
   render() {
-    const { status } = this.state;
-    const { handleClick, setModalImage } = this;
+    const { status, searchResults } = this.state;
+    const { handleClick } = this;
+    const { openModal } = this.props;
 
     if (status === 'idle') {
-      return <h1>Hello</h1>;
+      return <div></div>;
     }
     if (status === 'pending') {
-      return <h1>Please wait...</h1>;
+      return <Loader />;
     }
     if (status === 'resolved') {
       return (
         <>
-          <ul className="ImageGallery" onClick={setModalImage}>
+          <ul className="ImageGallery" onClick={openModal}>
             {this.state.searchResults.map(el => (
               <ImageGalleryItem key={el.id} item={el} />
             ))}
           </ul>
-          <Button handleClick={handleClick} />
+          {searchResults.length !== 0 ? (
+            <Button handleClick={handleClick} />
+          ) : (
+            <p className="textNotification">Sorry, I didn't find anything</p>
+          )}
         </>
       );
     }
     if (status === 'regected') {
-      return <h1>Error!</h1>;
+      return <p className="textNotification">Error!</p>;
     }
   }
 }
 
 export default ImageGalery;
+
+ImageGalery.propTypes = {
+  searchValue: PropTypes.string,
+  openModal: PropTypes.func,
+};

@@ -1,5 +1,5 @@
+import PropTypes from 'prop-types';
 import { Component } from 'react';
-import { pixabayApi } from '../../services/pixabayApi';
 
 class Searchbar extends Component {
   state = {
@@ -50,3 +50,7 @@ class Searchbar extends Component {
 }
 
 export default Searchbar;
+
+Searchbar.propTypes = {
+  getFormData: PropTypes.func,
+};
